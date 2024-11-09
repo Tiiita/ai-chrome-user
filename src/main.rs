@@ -1,16 +1,20 @@
+use std::env;
+
+use dotenv::dotenv;
 use env_logger::Builder;
 use log::{info, LevelFilter};
 use thirtyfour::{error::WebDriverError, DesiredCapabilities, WebDriver};
 
 #[tokio::main]
 async fn main() -> Result<(), WebDriverError>{
+    dotenv().expect("Failed to load .env file");
     init_logger();
-    info!("Booting up..");
+    info!("Booting up ({})..", env::consts::OS);
     let caps = DesiredCapabilities::chrome();
     let _driver = WebDriver::new("http://localhost:9515", caps).await?;
     info!("Started webdriver");
 
-    info!("Starting event loop, startup done!");
+    info!("Running event loop, startup done!");
     loop {
         
     }

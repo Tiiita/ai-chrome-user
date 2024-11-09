@@ -1,29 +1,44 @@
 
-use std::{env::{self, consts::OS}, fs::{DirBuilder, File}};
+use std::{env::{self, consts::OS}, fs::{DirBuilder, File}, io::Write, path::Path};
 
 use log::{debug, error};
 use reqwest::Client;
+use zip::ZipArchive;
 
-const CACHE_PATH: &str = "cache";
+pub const CHROME_CACHE_PATH: &str = "cache/chrome";
 
 //driver = true => driver, driver = false => browser
-pub async fn download(client: Client, driver: bool) {
+pub async fn download(client: &Client, driver: bool) {
     let response = client.get(build_url(driver)).send().await.expect("Failed to download chrome(driver)");
-    debug!("Driver={driver}, Download Res Status: {}", response.status());
+
+    let bytes = response.bytes().await.expect("Failed to get bytes");
 
     DirBuilder::new()
     .recursive(true)
-    .create(CACHE_PATH)
+    .create(CHROME_CACHE_PATH)
     .expect("Failed to create cache directory");
 
-    let mut zip_path = CACHE_PATH.to_string();
-    zip_path.push_str("chrome");
+    let mut zip_path = CHROME_CACHE_PATH.to_string();
+    zip_path.push_str(if driver { "/driver.zip" } else { "/browser.zip" });
 
-    File::create(zip_path).expect("Failed to create chrome(driver) executable file");
+    let mut zip_file = File::create(zip_path).expect("Failed to create chrome(driver) executable file");
+    zip_file.write(&bytes).expect("Failed to write zip file bytes to file");
+    extract_zip(zip_file);
+}
+
+fn extract_zip(file: File) {
+    let mut archive = ZipArchive::new(file).expect("Failed to create zip archive");
+
+    debug!("Extracting process starting..");
+    archive.extract("test").expect("Failed to extract archive");
+}
+
+pub fn cache_exists() -> bool {
+    Path::new(CHROME_CACHE_PATH).exists()
 }
 
 //driver = true => driver, driver = false => browser
-pub fn build_url(driver: bool) -> String {
+fn build_url(driver: bool) -> String {
     let version = env::var("CHROME_VERSION").expect("Could not find chrome version in .env");
     let mut url = "https://storage.googleapis.com/chrome-for-testing-public/".to_string();
     url.push_str(&version);

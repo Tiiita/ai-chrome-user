@@ -1,5 +1,3 @@
-
-
 #[derive(Debug)]
 pub enum Action {
     Type(String),
@@ -16,9 +14,6 @@ pub enum HtmlElementIdentifier {
 
 pub fn parse<'a>(command: String) -> Result<Action, &'a str> {
     let split: Vec<&str> = command.split(" ").collect();
-    if split.len() != 2 {
-        return Err("Wrong command length");
-    }
 
     let arg = split[1].to_string();
 
@@ -44,28 +39,35 @@ pub fn parse<'a>(command: String) -> Result<Action, &'a str> {
 }
 
 fn extract_html_identifier(arg: String) -> Result<HtmlElementIdentifier, &'static str> {
-    if let (Some(start), Some(end)) = (arg.find('('), arg.find(')')) {
-        let identifier = &arg[..start].trim();
-        let contents = &arg[start + 1..end];
-        let parts: Vec<&str> = contents.split_whitespace().collect();
-        
-        match identifier {
-            &"name" | &"class" if parts.len() == 2 => {
-                let value = parts[0].to_string();
-                if let Ok(index) = parts[1].parse::<usize>() {
-                    match identifier {
-                        &"name" => Ok(HtmlElementIdentifier::Name(value, index)),
-                        &"class" => Ok(HtmlElementIdentifier::Class(value, index)),
-                        _ => Err("Unexpected identifier"),
+    let clean_arg = arg.trim_matches(|c| c == '(' || c == ')');
+    let parts: Vec<&str> = clean_arg.split(',').collect();
+    let wrong_fmt_msg = "Wrong format.";
+
+    match parts.get(0) {
+        Some(id_type) => {
+            match id_type {
+                &"id" => {
+                    match parts.get(1) {
+                        Some(a) => { Ok(HtmlElementIdentifier::Id(a.to_string())) },
+                        None => { Err(wrong_fmt_msg) },
+                    }      
+                },
+
+                &"class" => {
+                    match parts.get(1..2) {
+                        Some(class_args) => {
+                            match class_args[1].parse::<usize>() {
+                                Ok(index) => { return Ok(HtmlElementIdentifier::Class(class_args[0].to_string(), index)) },
+                                Err(_) => { return Err(wrong_fmt_msg) },
+                            };
+                         },
+
+                        None => { Err(wrong_fmt_msg) },
                     }
-                } else {
-                    Err("Invalid index format")
-                }
+                },
+                _ => { return Err("Unknown HtmlElementIdentifier") },
             }
-            &"id" if parts.len() == 1 => Ok(HtmlElementIdentifier::Id(parts[0].to_string())),
-            _ => Err("Invalid format: Expected 'name(value index)', 'class(value index)', or 'id(value)'"),
-        }
-    } else {
-        Err("Invalid format: Missing parentheses")
+        },
+        None => { return Err("Unable to extract identifier type. Wrong format!") },
     }
 }

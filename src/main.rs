@@ -1,4 +1,4 @@
-use std::{env::{self, consts::OS}, io::stdin, process::Command};
+use std::{env::{self, consts::OS}, io::{stdin, stdout}, process::Command};
 
 use ai_browser::{
     action_executor::{self},
@@ -51,8 +51,11 @@ fn execute_chrome_driver() {
             "./".to_string() + predicted_path.as_str()
         };
 
+        debug!("CMD: {}", cmd);
+
         Command::new(cmd)
             .arg("--port=9515")
+            .stderr(stdout())
             .output()
             .expect("Failed to execute chromedriver binary");
         debug!("Executed chromedriver binary");

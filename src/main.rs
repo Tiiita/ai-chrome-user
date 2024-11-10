@@ -3,7 +3,7 @@ use std::{env, process::Command};
 use ai_browser::chrome_setup;
 use dotenv::dotenv;
 use env_logger::Builder;
-use log::{debug, info, LevelFilter};
+use log::{info, LevelFilter};
 use reqwest::Client;
 use thirtyfour::{error::WebDriverError, ChromiumLikeCapabilities, DesiredCapabilities, WebDriver};
 
@@ -26,7 +26,7 @@ async fn main() -> Result<(), WebDriverError> {
 
     info!("Running event loop, startup done!");
     loop {
-        
+
     }
 }
 

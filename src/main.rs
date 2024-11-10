@@ -1,9 +1,9 @@
-use std::{env, process::Command};
+use std::{env, io::stdin, process::Command};
 
-use ai_browser::chrome_setup;
+use ai_browser::{action_executor, chrome_setup, cmd_parser};
 use dotenv::dotenv;
 use env_logger::Builder;
-use log::{info, LevelFilter};
+use log::{error, info, LevelFilter};
 use reqwest::Client;
 use thirtyfour::{error::WebDriverError, ChromiumLikeCapabilities, DesiredCapabilities, WebDriver};
 
@@ -21,12 +21,19 @@ async fn main() -> Result<(), WebDriverError> {
     caps.set_no_sandbox().expect("Unable to deactivate sandbox");
     execute_chrome_driver();
 
-    let _driver = WebDriver::new("http://localhost:9515", caps).await?;
+    let driver = WebDriver::new("http://localhost:9515", caps).await?;
     info!("Started WebDriver");
 
     info!("Running event loop, startup done!");
     loop {
-
+        let mut buf = String::new();
+        stdin().read_line(&mut buf).unwrap();
+        match cmd_parser::parse(buf.trim().to_string()) { 
+            Ok(action) => { 
+                action_executor::execute(action, driver.clone()).await;
+             },
+            Err(err) => { error!("Got error: {err}") },
+        }
     }
 }
 

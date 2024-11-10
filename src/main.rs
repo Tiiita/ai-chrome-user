@@ -24,7 +24,7 @@ async fn main() -> Result<(), WebDriverError> {
         .expect("Failed to set chrome binary path");
     caps.set_no_sandbox().expect("Unable to deactivate sandbox");
     execute_chrome_driver();
-    sleep(Duration::from_millis(100));
+    sleep(Duration::from_millis(250));
 
     let driver = WebDriver::new("http://localhost:9515", caps).await?;
     info!("Running event loop, startup done!");

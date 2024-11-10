@@ -1,29 +1,20 @@
+use crate::action_executor::{Action, HtmlElementIdentifier};
 
-#[derive(Debug)]
-pub enum Action {
-    Type(String),
-    Click(HtmlElementIdentifier),
-    SetUrl(String),
-}
 
-#[derive(Debug, Clone)]
-pub enum HtmlElementIdentifier {
-    Name(String, usize), //Element by name and the index of the list
-    Class(String, usize),
-    Id(String),
-}
+
+
 
 pub fn parse<'a>(command: String) -> Result<Action, &'a str> {
      match command.split_once(' ') {
         Some(split) => {
             let arg = split.1.to_string();
+            let command = split.0;
 
-            match split.0 {
+            match command {
                 "type" => {
                     return Ok(Action::Type(arg));
                 }
         
-                //example: "click name(str i32)"
                 "click" => {
                     let identifier = extract_html_identifier(arg)?;
                     return Ok(Action::Click(identifier));

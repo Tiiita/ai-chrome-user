@@ -1,6 +1,6 @@
 use std::{env, io::stdin, process::Command};
 
-use ai_browser::{action_executor, chrome_setup, cmd_parser};
+use ai_browser::{action_executor::{self, LastClickedElement}, chrome_setup, cmd_parser};
 use dotenv::dotenv;
 use env_logger::Builder;
 use log::{error, info, LevelFilter};
@@ -25,12 +25,14 @@ async fn main() -> Result<(), WebDriverError> {
     info!("Started WebDriver");
 
     info!("Running event loop, startup done!");
+
+    let mut last_clicked = LastClickedElement { last_clicked: None };
     loop {
         let mut buf = String::new();
         stdin().read_line(&mut buf).unwrap();
         match cmd_parser::parse(buf.trim().to_string()) { 
             Ok(action) => { 
-                action_executor::execute(action, driver.clone()).await;
+                action_executor::execute(action, driver.clone(), &mut last_clicked).await;
              },
             Err(err) => { error!("Got error: {err}") },
         }

@@ -1,0 +1,5 @@
+seturl google
+wait(1200)
+click class(gLFyf, 0)
+wait(100)
+type youtube.com

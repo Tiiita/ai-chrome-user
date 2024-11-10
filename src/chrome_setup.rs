@@ -39,6 +39,20 @@ pub fn cache_exists() -> bool {
     Path::new(CHROME_CACHE_PATH).exists()
 }
 
+pub fn get_predicted_path(driver: bool) -> String {
+    let key = match OS {
+        "windows" => { if driver { "CHROME_DRIVER_WIN" } else { "CHROME_BINARY_WIN" } },
+        "macos" => { if driver { "CHROME_DRIVER_MAC" } else { "CHROME_BINARY_MAC" } },
+        "linux" => { if driver { "CHROME_DRIVER_LINUX" } else { "CHROME_BINARY_LINUX" } },
+        _ => { 
+            incompatible_os();
+            "" 
+        }
+    };
+ 
+    env::var(key).expect("Failed to get chrome(driver) path from .env")
+}
+
 //driver = true => driver, driver = false => browser
 fn build_url(driver: bool) -> String {
     let version = env::var("CHROME_VERSION").expect("Could not find chrome version in .env");
@@ -60,11 +74,13 @@ fn build_url(driver: bool) -> String {
             if driver { url.push_str("chromedriver-linux64.zip") } else { url.push_str("chrome-linux64.zip"); }
         }
 
-        _ => {
-            error!("Incopatible operating system: {}", OS);
-            panic!()
-        },
+        _ => { incompatible_os() },
     }
 
     url
+}
+
+fn incompatible_os() {
+    error!("Incopatible operating system: {}", OS);
+    panic!()
 }

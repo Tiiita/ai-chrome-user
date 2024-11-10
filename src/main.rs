@@ -1,7 +1,7 @@
 use std::{
     env::{self, consts::OS},
     io::{stdin, stdout},
-    process::Command,
+    process::{Command, Stdio},
 };
 
 use ai_browser::{
@@ -57,6 +57,7 @@ fn execute_chrome_driver() {
     Command::new(cmd)
         .arg("--port=9515")
         .stderr(stdout())
+        .stdout(Stdio::null())
         .spawn()
         .expect("Failed to execute chromedriver binary");
 }

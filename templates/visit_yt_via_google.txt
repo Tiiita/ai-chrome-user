@@ -1,4 +1,4 @@
-seturl google
+seturl google.com
 wait(1200)
 click class(gLFyf, 0)
 wait(100)

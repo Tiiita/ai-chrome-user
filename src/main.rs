@@ -1,4 +1,10 @@
-use std::{env::{self, consts::OS}, io::{stdin, stdout}, process::Command, thread::sleep, time::Duration};
+use std::{
+    env::{self, consts::OS},
+    io::{stdin, stdout},
+    process::Command,
+    thread::sleep,
+    time::Duration,
+};
 
 use ai_browser::{
     action_executor::{self},
@@ -24,7 +30,6 @@ async fn main() -> Result<(), WebDriverError> {
         .expect("Failed to set chrome binary path");
     caps.set_no_sandbox().expect("Unable to deactivate sandbox");
     execute_chrome_driver();
-    sleep(Duration::from_millis(250));
 
     let driver = WebDriver::new("http://localhost:9515", caps).await?;
     info!("Running event loop, startup done!");
@@ -44,22 +49,18 @@ async fn main() -> Result<(), WebDriverError> {
 }
 
 fn execute_chrome_driver() {
-    tokio::spawn(async {
-        let predicted_path = chrome_setup::get_predicted_path(true);
-        let cmd = if OS.eq("windows") {
-           predicted_path
-        } else { 
-            "./".to_string() + predicted_path.as_str()
-        };
+    let predicted_path = chrome_setup::get_predicted_path(true);
+    let cmd = if OS.eq("windows") {
+        predicted_path
+    } else {
+        "./".to_string() + predicted_path.as_str()
+    };
 
-        debug!("CMD: {}", cmd);
-
-        Command::new(cmd)
-            .arg("--port=9515")
-            .stderr(stdout())
-            .output()
-            .expect("Failed to execute chromedriver binary");
-    });
+    Command::new(cmd)
+        .arg("--port=9515")
+        .stderr(stdout())
+        .spawn()
+        .expect("Failed to execute chromedriver binary");
 }
 
 async fn start_chrome_download(http: &Client) {

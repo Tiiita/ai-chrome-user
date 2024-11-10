@@ -13,6 +13,12 @@ pub async fn execute(action: Action, driver: WebDriver) {
                 None => { warn!("Unable to locate element: {:?}", identifier) }
             }
         },
+
+        Action::SetUrl(url) => {
+            if let Err(why) = driver.goto(url).await {
+                error!("Failed to go to url. Err: {:?}", why);
+            }
+        }
         _ => {
             error!("Cannot execute unknown action: {:?}", action);
         }

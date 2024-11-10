@@ -1,4 +1,4 @@
-use std::{env::{self, consts::OS}, io::{stdin, stdout}, process::Command};
+use std::{env::{self, consts::OS}, io::{stdin, stdout}, process::Command, thread::sleep, time::Duration};
 
 use ai_browser::{
     action_executor::{self},
@@ -24,6 +24,7 @@ async fn main() -> Result<(), WebDriverError> {
         .expect("Failed to set chrome binary path");
     caps.set_no_sandbox().expect("Unable to deactivate sandbox");
     execute_chrome_driver();
+    sleep(Duration::from_millis(100));
 
     let driver = WebDriver::new("http://localhost:9515", caps).await?;
     info!("Running event loop, startup done!");
@@ -58,7 +59,6 @@ fn execute_chrome_driver() {
             .stderr(stdout())
             .output()
             .expect("Failed to execute chromedriver binary");
-        debug!("Executed chromedriver binary");
     });
 }
 

@@ -2,8 +2,6 @@ use std::{
     env::{self, consts::OS},
     io::{stdin, stdout},
     process::Command,
-    thread::sleep,
-    time::Duration,
 };
 
 use ai_browser::{
@@ -13,7 +11,7 @@ use ai_browser::{
 };
 use dotenv::dotenv;
 use env_logger::Builder;
-use log::{debug, error, info, LevelFilter};
+use log::{error, info, LevelFilter};
 use reqwest::Client;
 use thirtyfour::{error::WebDriverError, ChromiumLikeCapabilities, DesiredCapabilities, WebDriver};
 

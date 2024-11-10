@@ -1,6 +1,6 @@
 use std::{env, io::stdin, process::Command};
 
-use ai_browser::{action_executor::{self}, chrome_setup, cmd_parser};
+use ai_browser::{action_executor::{self}, chrome_setup::{self}, cmd_parser};
 use dotenv::dotenv;
 use env_logger::Builder;
 use log::{error, info, LevelFilter};
@@ -13,7 +13,6 @@ async fn main() -> Result<(), WebDriverError> {
     init_logger();
     let http = Client::new();
     info!("Booting up ({})..", env::consts::OS);
-
     start_chrome_download(&http).await;
 
     let mut caps = DesiredCapabilities::chrome();

@@ -15,8 +15,9 @@ pub async fn execute(action: Action, driver: WebDriver) {
         },
 
         Action::SetUrl(url) => {
-            if let Err(why) = driver.goto(url).await {
-                error!("Failed to go to url. Err: {:?}", why);
+            match driver.goto(url.clone()).await {
+                Ok(_) => { info!("Changed url to: {url}") },
+                Err(why) => {  error!("Failed to go to url. Err: {:?}", why); },
             }
         }
         _ => {

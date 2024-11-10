@@ -15,8 +15,8 @@ async fn main() -> Result<(), WebDriverError>{
     info!("Booting up ({})..", env::consts::OS);
 
     if !chrome_setup::cache_exists() {
-        //info!("Downloading chrome browser..");
-       // chrome_setup::download(&http, false).await;
+        info!("Downloading chrome browser..");
+        chrome_setup::download(&http, false).await;
     
         info!("Downloading chrome driver..");
         chrome_setup::download(&http, true).await;

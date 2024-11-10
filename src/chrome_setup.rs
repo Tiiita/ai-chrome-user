@@ -1,11 +1,13 @@
 
 use std::{env::{self, consts::OS}, fs::{DirBuilder, File}, io::Write, path::Path};
 
-use log::{debug, error};
+use log::error;
 use reqwest::Client;
 use zip::ZipArchive;
 
 pub const CHROME_CACHE_PATH: &str = "cache/chrome";
+const DRIVER_ZIP_NAME: &str = "/driver.zip";
+const BROWSER_ZIP_NAME: &str = "/browser.zip";
 
 //driver = true => driver, driver = false => browser
 pub async fn download(client: &Client, driver: bool) {
@@ -19,18 +21,18 @@ pub async fn download(client: &Client, driver: bool) {
     .expect("Failed to create cache directory");
 
     let mut zip_path = CHROME_CACHE_PATH.to_string();
-    zip_path.push_str(if driver { "/driver.zip" } else { "/browser.zip" });
+    zip_path.push_str(if driver { DRIVER_ZIP_NAME } else { BROWSER_ZIP_NAME });
 
-    let mut zip_file = File::create(zip_path).expect("Failed to create chrome(driver) executable file");
-    zip_file.write(&bytes).expect("Failed to write zip file bytes to file");
-    extract_zip(zip_file);
+    let mut zip_file = File::create(&zip_path).expect("Failed to create chrome(driver) executable file");
+    zip_file.write_all(&bytes).expect("Failed to write zip file bytes to file");
+    drop(zip_file);
+    
+    extract_zip(File::open(zip_path).expect("Failed to open zip file"));
 }
 
 fn extract_zip(file: File) {
     let mut archive = ZipArchive::new(file).expect("Failed to create zip archive");
-
-    debug!("Extracting process starting..");
-    archive.extract("test").expect("Failed to extract archive");
+    archive.extract(CHROME_CACHE_PATH).expect("Failed to extract archive");
 }
 
 pub fn cache_exists() -> bool {

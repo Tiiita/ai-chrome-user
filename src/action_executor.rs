@@ -34,8 +34,8 @@ pub async fn execute(action: Action, driver: WebDriver) {
                 Err(why) => {  error!("Failed to go to url. Err: {:?}", why); },
             }
         }
-        Action::Type(text) => {
-            
+        Action::Type(_text) => {
+            todo!("Implement this by saving last clicked to send keys");
         },
        
     }

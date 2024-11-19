@@ -5,7 +5,7 @@ use std::{
 };
 
 use ai_browser::{
-    action_executor::{self},
+    action_executor::{self, HistoryEntry},
     chrome_setup::{self},
     cmd_parser,
 };
@@ -30,14 +30,18 @@ async fn main() -> Result<(), WebDriverError> {
     execute_chrome_driver();
 
     let driver = WebDriver::new("http://localhost:9515", caps).await?;
+    let mut action_history: Vec<HistoryEntry> = Vec::new();
     info!("Running event loop, startup done!");
 
     loop {
         let mut buf = String::new();
         stdin().read_line(&mut buf).unwrap();
+        if buf.trim().len() == 0 {
+            continue;
+        }
         match cmd_parser::parse(buf.trim().to_string()) {
             Ok(action) => {
-                action_executor::execute(action, driver.clone()).await;
+                action_executor::execute(action, driver.clone(), &mut action_history).await;
             }
             Err(err) => {
                 error!("Got error: {err}")

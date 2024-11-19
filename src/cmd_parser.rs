@@ -20,8 +20,8 @@ pub fn parse<'a>(command: String) -> Result<Action, &'a str> {
                     return Ok(Action::Click(identifier));
                 }
         
-                "seturl" => {
-                    return Ok(Action::SetUrl(arg));
+                "goto" => {
+                    return Ok(Action::GoTo(arg));
                 }
         
                 _ => {

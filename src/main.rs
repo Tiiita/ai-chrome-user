@@ -44,7 +44,7 @@ async fn main() -> Result<(), WebDriverError> {
                 action_executor::execute(action, driver.clone(), &mut action_history).await;
             }
             Err(err) => {
-                error!("Got error: {err}")
+                error!("X: {err}")
             }
         }
     }

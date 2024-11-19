@@ -13,17 +13,21 @@ pub fn parse<'a>(command: String) -> Result<Action, &'a str> {
             match command {
                 "type" => {
                     return Ok(Action::Type(arg));
-                }
+                },
         
                 "click" => {
                     let identifier = extract_html_identifier(arg)?;
                     return Ok(Action::Click(identifier));
-                }
+                },
         
                 "goto" => {
                     return Ok(Action::GoTo(arg));
-                }
-        
+                },
+
+                "enter" => {
+                    return Ok(Action::PressEnter);
+                },
+
                 _ => {
                     return Err("Unknown command");
                 }

@@ -85,10 +85,7 @@ pub async fn execute(action: Action, driver: WebDriver, action_history: &mut Vec
                 Some(click_entry) => match click_entry.interacted_element.clone() {
                     Some(ele) => match ele.send_keys(Key::Enter).await {
                         Ok(_) => {
-                            info!(
-                                "Sent press key to last clicked element: {:?}",
-                                ele.element_id
-                            )
+                            info!("Sent press key to last clicked element");
                         }
                         Err(why) => {
                             error!(

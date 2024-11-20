@@ -1,6 +1,0 @@
-goto google.com
-//example comment here
-click id(L2AGLb)
-click class(gLFyf, 0)
-type youtube.com
-enter _

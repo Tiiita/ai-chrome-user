@@ -44,6 +44,7 @@ dependencies = [
  "dotenv",
  "env_logger",
  "log",
+ "rand",
  "reqwest",
  "thirtyfour",
  "tokio",

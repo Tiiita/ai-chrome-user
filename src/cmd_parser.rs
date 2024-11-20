@@ -2,13 +2,16 @@ use std::{fs::File, io::Read};
 
 use log::error;
 
-use crate::action_executor::{Action, HtmlElementIdentifier};
+use crate::{action_executor::{Action, HtmlElementIdentifier}, cmd_functions};
 
 pub fn parse<'a>(command: String) -> Result<Vec<Action>, &'a str> {
     match command.split_once(' ') {
         Some(split) => {
             let arg = split.1.to_string();
             let command = split.0;
+
+            let command_replaced = replace_placeholders(command.to_string());
+            let command = command_replaced.as_str();
 
             match command {
                 "type" => {
@@ -122,4 +125,10 @@ pub fn parse_commands_from_file(path: &str) -> Vec<Action> {
     }
 
     cmds
+}
+
+fn replace_placeholders(cmd: String) -> String {
+    let cmd = cmd.replace("@NewFirstName", &cmd_functions::new_first_name());
+    let cmd = cmd.replace("@NewEmailAddress", &cmd_functions::new_email_addr());
+    cmd
 }

@@ -19,8 +19,10 @@ use thirtyfour::{error::WebDriverError, ChromiumLikeCapabilities, DesiredCapabil
 async fn main() -> Result<(), WebDriverError> {
     dotenv().expect("Failed to load .env file");
     init_logger();
+
     let http = Client::new();
     info!("Booting up ({})..", env::consts::OS);
+    cmd_parser::parse_commands_from_file("templates/visit_yt_via_google.txt");
     start_chrome_download(&http).await;
 
     let mut caps = DesiredCapabilities::chrome();

@@ -1,8 +1,8 @@
+use std::{fs::File, io::Read};
+
+use log::error;
+
 use crate::action_executor::{Action, HtmlElementIdentifier};
-
-
-
-
 
 pub fn parse<'a>(command: String) -> Result<Action, &'a str> {
      match command.split_once(' ') {
@@ -82,4 +82,32 @@ fn extract_html_identifier(arg: String) -> Result<HtmlElementIdentifier, &'stati
         },
         None => return Err("Unable to extract identifier type. Wrong format!"),
     }
+}
+
+
+//Panics when getting file error!
+pub fn parse_commands_from_file(path: &str) -> Vec<Action> {
+    let mut cmds = Vec::new();
+    let mut file = File::open(path).expect("Failed to open commands file");
+    let mut content_buf = String::new();
+    file.read_to_string(&mut content_buf).expect("Failed to read file");
+
+
+    let cmd_strings: Vec<&str> = content_buf.split("\n").collect();
+
+    for mut ele in cmd_strings {
+        ele = ele.trim();
+        if ele.len() == 0 {
+            continue;
+        }
+
+         match parse(ele.to_string()) {
+            Ok(action) => {
+                cmds.push(action);
+            },
+            Err(why) => { error!("Unable to parse command: {:?}", why) },
+        }
+    }
+
+    cmds
 }

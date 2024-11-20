@@ -1,0 +1,9 @@
+//Create new email address
+goto gmail.com
+click class(VfPpkd-vQzf8d, 0)
+click class(VfPpkd-StrnGf-rymPhb-b9t22c, 0)
+click id(firstName)
+type @NewFirstName
+click class(VfPpkd-vQzf8d, 0)
+
+

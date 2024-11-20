@@ -22,7 +22,6 @@ async fn main() -> Result<(), WebDriverError> {
 
     let http = Client::new();
     info!("Booting up ({})..", env::consts::OS);
-    cmd_parser::parse_commands_from_file("templates/visit_yt_via_google.txt");
     start_chrome_download(&http).await;
 
     let mut caps = DesiredCapabilities::chrome();
@@ -42,8 +41,10 @@ async fn main() -> Result<(), WebDriverError> {
             continue;
         }
         match cmd_parser::parse(buf.trim().to_string()) {
-            Ok(action) => {
-                action_executor::execute(action, driver.clone(), &mut action_history).await;
+            Ok(actions) => {
+                for action in actions {
+                    action_executor::execute(action, driver.clone(), &mut action_history).await;
+                }
             }
             Err(err) => {
                 error!("X: {err}")

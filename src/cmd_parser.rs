@@ -107,6 +107,10 @@ pub fn parse_commands_from_file(path: &str) -> Vec<Action> {
             continue;
         }
 
+        if ele.starts_with("//") {
+            continue;
+        }
+
         match parse(ele.to_string()) {
             Ok(action) => {
                 cmds.push(action.first().expect("Command parse should only return one action. Does the file contain execute command?").clone());
